@@ -21,16 +21,25 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+
+    <script>
+        window.onload = function() {
+            const allCookies = document.cookie;
+            
+            if(allCookies == '') {
+                window.location.href = "/login";
+            }
+        }
+    </script>
 
 
+    <!-- 지도 setting -->
     <script type="text/javascript">
-
         const GROUP_COLOR = ['red', 'green', 'blue', 'purple', 'orange', 'indigo'];
-
 
         var map;
 
-        
         var markerSource = new ol.source.Vector();
         var markerLayer = new ol.layer.Vector({
             source: markerSource, //마커 feacture들
@@ -56,8 +65,8 @@
                         }),
                         
                     }),
+                    lineLayer,
                     markerLayer,
-                    lineLayer
                 ],
                 target: 'map',
                 view: new ol.View({
@@ -72,32 +81,96 @@
     </script>
 
 
-    <script>
 
+    <script>
+        const map_zoomIn = () => {
+            const view = map.getView();
+            const currentZoom = view.getZoom();
+            view.setZoom(currentZoom + 1);
+
+            if(currentZoom <= maxZoom){
+                view.setZoom(currentZoom + 1);
+            }
+        }
+
+        const map_zoomOut = () => {
+            const view = map.getView();
+            const currentZoom = view.getZoom();
+
+            if(currentZoom >= minZoom){
+                view.setZoom(currentZoom - 1);
+            }
+            
+        }
+
+        const map_zoom_clear = () => {
+            const view = map.getView();
+            view.setZoom(7.8);
+        }
+    </script>
+
+
+
+    <!-- 마커 라인 그리기 -->
+    <script>
         let markerList, new_markerList;
         let lineData, new_lineData;
 
 
+        const cctv_open = () => {
+            document.getElementsByClassName('cctvWrap')[0].className = "cctvWrap";
+        }
+
+        const cctv_close = () => {
+            document.getElementsByClassName('cctvWrap')[0].className = "cctvWrap cctvWrap_";
+        }
+
+        const shipInfo_more_close = () => {
+            let ship_more_close_radio = document.getElementsByClassName('ship_more_close')[0];
+            ship_more_close_radio.checked = true;
+        }
+
+
         const load_currnet_location = async () => {
 
+        
+            var defaultStyle = new ol.style.Style({
+                image: new ol.style.Icon({
+                    src: 'https://littledeep.com/wp-content/uploads/2020/03/littledeep_illustration_ship_style1.png', // 커스텀 마커 이미지 경로
+                    // color: 'red',
+                    anchor: [0.5, 0.5], // 마커 이미지의 앵커 포인트 설정
+                    scale: 0.05
+                })
+            });
+
+
             const addMerker = async (markerList) => {
-                const markerIcon = await markerList.map((markerData) => {
+                const markerIcon = await markerList.map((markerData, i) => {
                     const { latitude, longitude } = markerData;
                     console.log(latitude, longitude)
     
                     const marker = new ol.Feature({
-                        geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude]))
+                        geometry: new ol.geom.Point(ol.proj.fromLonLat([longitude, latitude])),
+                        markerIndex: i
                     });
             
                     // 커스텀 마커 스타일 설정
-                    const iconStyle = new ol.style.Style({
-                        image: new ol.style.Icon({
-                            src: 'https://cdn-icons-png.flaticon.com/512/62/62913.png?w=360', // 커스텀 마커 이미지 경로
-                            color: 'red',
-                            anchor: [0.5, 0.5], // 마커 이미지의 앵커 포인트 설정
-                            scale: 0.06
-                        })
-                    });
+                    // const iconStyle = new ol.style.Style({
+                    //     image: new ol.style.Icon({
+                    //         src: 'https://cdn-icons-png.flaticon.com/512/62/62913.png?w=360', // 커스텀 마커 이미지 경로
+                    //         color: 'red',
+                    //         anchor: [0.5, 0.5], // 마커 이미지의 앵커 포인트 설정
+                    //         scale: 0.06
+                    //     })
+
+                    //     // image: new ol.style.Circle({
+                    //     //     radius: 8,
+                    //     //     fill: new ol.style.Fill({ color: GROUP_COLOR[i] }),
+                    //     //     stroke: new ol.style.Stroke({ color: 'white', width: 2 })
+                    //     // })
+                    // });
+
+                    const iconStyle = defaultStyle;
                     marker.setStyle(iconStyle);
             
                     return marker;
@@ -105,14 +178,39 @@
 
                 markerSource.clear();
                 markerSource.addFeatures(markerIcon);
+
+
+                
+
+                var selectInteraction = new ol.interaction.Select({
+                    layers: [markerLayer], // 클릭 가능한 레이어 설정
+                    style: defaultStyle
+                });
+
+                // 지도에 Select 인터렉션을 추가합니다.
+                map.addInteraction(selectInteraction);
+
+                // 마커 클릭 이벤트 리스너 추가
+                selectInteraction.on('select', function (event) {
+                    if (event.selected.length > 0) {
+                        var selectedFeature = event.selected[0];
+                        var markerIndex = selectedFeature.get('markerIndex'); // markerIndex
+
+                        console.log(selectedFeature)
+
+                        // alert('이 마커는 배열의 ' + (markerIndex) + '번째 마커입니다.');
+
+                        document.getElementsByName("ship_more_visible")[markerIndex+1].checked = true;
+                        
+                        var coordinate = selectedFeature.getGeometry().getCoordinates();
+                        map.getView().animate({ center: coordinate, zoom: 10 });
+                    }
+                });
+
+
             }
 
             const add_shipInfo= async (markerList) => {
-
-                var shipInfo_more_close = () => {
-                    let ship_more_close_radio = document.getElementsByClassName('ship_more_close')[0];
-                    ship_more_close_radio.checked = true;
-                }
 
                 const shipInfoList_wrap = document.getElementsByClassName('shipInfoList_wrap')[0];
 
@@ -138,7 +236,7 @@
                                                         <input type="radio" name='ship_more_visible' class='ship_more_visible'/>
                                                         
                                                         <div class='ship_more'>
-                                                            <span class='ship_more_close_btn' onClick="javascript:shipInfo_more_close()">X</span>
+                                                            <span class='ship_more_close_btn' onClick="shipInfo_more_close()">X</span>
 
                                                             <p>${value['router_id']}</p>
                                                             <img class="ship_more_img" src="https://i.namu.wiki/i/7jeVH_6qCK1ARphL-QXYaKMHRtJFVGN6wioSM6osgORavCV42-iwKWp_4hmvfxy9VToDHRk13315si8KsWZPpg.webp" alt="" />
@@ -148,7 +246,7 @@
                                                                 
                                                             </ul>
 
-                                                            <button onClick={cctv_open}>CCTV</button>
+                                                            <button onClick="cctv_open()">CCTV</button>
                                                         </div>
                                                     </div>
                                                     `
@@ -161,8 +259,6 @@
                     const response = await axios.get(
                         "https://ocean-gps.com:8000/gpsAPI/gps_current"
                     );
-
-                    console.log(response.data)
 
                     new_markerList = response.data
 
@@ -215,8 +311,6 @@
                         "https://ocean-gps.com:8000/gpsAPI/gps_route"
                     );
 
-                    console.log(response.data)
-
                     const new_lineData = response.data;
 
 
@@ -229,9 +323,6 @@
 
                             for(let i=0; i<item['latitude'].length; i++){
 
-                                console.log("=======================================")
-                                console.log([item['longitude'][i], item['latitude'][i]])
-
                                 let trnasPath = ol.proj.fromLonLat([item['longitude'][i], item['latitude'][i]])
                                 let [long, lat] = trnasPath
 
@@ -241,20 +332,11 @@
                             }
 
                             lines.push(linePath)
-
-                            console.log(lines)
                             addLine(lines)
                         })
 
 
                     }
-
-
-
-
-
-                    
-                    
 
                 } catch (error) {
                     console.error('Error fetching data:', error);
@@ -266,6 +348,39 @@
 
         setInterval(load_currnet_location, 1000);
         setInterval(load_route, 1000);
+    </script>
+
+
+
+    <script>
+    
+
+    </script>
+
+
+
+
+    <!-- 현재시간 -->
+    <script>
+        const currentTime = () => {
+            const newDate = new Date();
+
+            let now = newDate;  // 현재 날짜 및 시간
+            let todayYear = now.getFullYear();
+            let todayMonth = now.getMonth() + 1;
+            let todayDate = now.getDate();
+            const week = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            let dayOfWeek = week[now.getDay()];
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            let seconds = now.getSeconds();
+
+            let dateFormat = todayYear + '.' + todayMonth + '.' + todayDate + ' ' + dayOfWeek + ' ' + hours + ' : ' + minutes + ' : ' + seconds;
+
+            document.getElementById("currentTime").innerText = dateFormat;
+        }
+
+        setInterval(currentTime, 100);
     </script>
 
 </head>
@@ -287,6 +402,9 @@
   
               <div class='shipInfo_wrap'>
                 <div class='currentTime_wrap'>
+                    <div id='currentTime'>
+                        
+                    </div>
                 </div>
   
                 <hr />
@@ -317,13 +435,13 @@
 
               </div>
   
-              <button class='mapResetBtn'>위치 초기화</button>
-              <button class='zoomInBtn'>+</button>
-              <button class='zoomOutBtn'>-</button>
+              <button class='mapResetBtn' onclick="map_zoom_clear()">위치 초기화</button>
+              <button class='zoomInBtn' onclick="map_zoomIn()">+</button>
+              <button class='zoomOutBtn' onclick="map_zoomOut()">-</button>
   
   
               <div class='cctvWrap cctvWrap_ '>
-                <button>나가기</button>
+                <button onclick="cctv_close()">나가기</button>
   
                 <div class="cctv_view_wrap">
                   <div id="cctv1">

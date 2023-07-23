@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='../public/stylesheets/index.css' />
+    <link rel='stylesheet' href='../public/stylesheets/login.css' />
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script>
+
+        window.onload = function() {
+            const allCookies = document.cookie;
+            
+            if(allCookies != '') {
+                window.location.href = "/";
+            }
+        }
+
+        const submitBtn = async () => {
+            const loginForm = {
+                id: document.getElementById('inputId').value,
+                pw: document.getElementById('inputPw').value,
+            }
+            
+            const response = await axios.post(
+                "https://ocean-gps.com:8000/userAPI/login",
+                {
+                    id: loginForm.id,
+                    pw: loginForm.pw
+                }
+            );
+
+            if(response.data){
+                console.log(response.data[0].user_key)
+                window.document.cookie = `user_key=response.data[0].user_key`
+                window.location.href = "/";
+            }
+        }
+        
+    </script>
+  </head>
+  <body>
+    <div class='loginBackground'>
+        <div class='loginTitle'>k-marintraffic - 선박 위치 모니터링</div>
+
+        <div class='loginWrap'>
+            <div class='login'>
+                <div class='inputWrap'>
+                    <label htmlFor="inputId" id="labelId">아이디</label>
+                    <input type="text" id="inputId" name="id" />
+                </div>
+                
+                <div class='inputWrap'>
+                    <label htmlFor="inputPw">비밀번호</label>
+                    <input type="password" id="inputPw" name="pw" />
+                </div>
+
+                <p id="loginMsg">! 아이디를 입력해주세요</p>
+                
+
+                <input type="submit" value="로그인" onclick="submitBtn()"/>
+            </div>
+            
+        </div>
+        
+    </div>
+  </body>
+</html>
