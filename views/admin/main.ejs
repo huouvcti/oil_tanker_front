@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel='stylesheet' href='../public/stylesheets/index.css' />
+    <link rel='stylesheet' href='../public/stylesheets/admin_main.css' />
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+
+    <script>
+
+        window.onload = async function() {
+            const admin_key = `<%=admin_key %>`;
+
+            console.log(admin_key)
+
+            const response = await axios.get(
+                `https://localhost:8000/adminAPI/show_shipInfo/${admin_key}`,
+            );
+
+            console.log(response.data[0])
+
+            if(response.data){
+                document.getElementById("shipInfo_img").src = response.data[0].img;
+
+                document.getElementById("shipInfo_routerId").innerText = response.data[0].router_id;
+                document.getElementById("shipInfo_name").innerText = response.data[0].name;
+                document.getElementById("shipInfo_des").innerText = response.data[0].des;
+                document.getElementById("shipInfo_admin").innerText = response.data[0].id;
+            }
+            
+        }
+        
+    </script>
+  </head>
+  <body>
+    
+
+    <div class='mobile_regitInfo'>
+        <div class='title'>k-marintraffic 선박 위치 모니터링</div>
+
+        <div class='content'>
+            <h1>선박 정보</h1>
+
+            <img id="shipInfo_img" alt="" />
+
+            <ul>
+                <li>ID: <span id="shipInfo_routerId"></span></li>
+                <li>선박 이름: <span id="shipInfo_name"></span></li>
+                <li>선박 정보: <span id="shipInfo_des"></span></li>
+                <li>관리자: <span id="shipInfo_admin"></span></li>
+            </ul>
+
+            <a href="/admin/logoutProcess">로그아웃</a>
+            
+
+            <button>정보 수정</button>
+        </div>
+        
+    </div>
+
+    
+  </body>
+</html>

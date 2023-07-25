@@ -482,6 +482,10 @@
     list-style: none;
 }
 
+.ship_more ul li {
+    margin: 10px 0;
+}
+
 .ship_more button {
     border: none;
     height: 40px;
@@ -503,6 +507,39 @@
 .rsrp_img {
     width: 30px;
     margin-right: 10px;
+}
+
+
+
+
+
+.logoutBtn_wrap {
+    width: 100%;
+    height: 100px;
+
+
+
+    position: absolute;
+    bottom: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logoutBtn_wrap #logoutBtn {
+    display: block;
+    background-color: #2B78E2;
+
+    width: 80%;
+    padding: 15px;
+    color: #fff;
+    
+    border-radius: 10px;;
+
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;;
 }
 
 

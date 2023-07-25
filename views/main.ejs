@@ -25,11 +25,8 @@
 
     <script>
         window.onload = function() {
-            const allCookies = document.cookie;
-            
-            if(allCookies == '') {
-                window.location.href = "/login";
-            }
+
+            map_init()
         }
     </script>
 
@@ -56,6 +53,7 @@
             
         function map_init(){		
             map = new ol.Map({
+
                 layers: [
                     new ol.layer.Tile({
                         source: new ol.source.TileImage({
@@ -75,7 +73,8 @@
                     extent: [13136084.488096794, 3786707.6544116065, 14934291.743690653, 4697752.502265213],
                     minZoom: minZoom,
                     maxZoom: maxZoom,
-                })
+                }),
+
             });
         }	
     </script>
@@ -215,11 +214,21 @@
                 const shipInfoList_wrap = document.getElementsByClassName('shipInfoList_wrap')[0];
 
                 shipInfoList_wrap.innerHTML = `<input type="radio" name='ship_more_visible' class='ship_more_close'/>`;
-                markerList.map((value, i) => {
+                markerList.map(async (value, i) => {
+                    const response = await axios.get(
+                        `https://localhost:8000/gpsAPI/show_ship_info/${value['router_id']}`
+                    );
+
+                    let ship_info = {};
+                    if(response.data){
+                        ship_info = response.data[0]
+                    }
+
+                    
                     shipInfoList_wrap.innerHTML += `<div class='shipInfoList'>
                                                         <input type="checkbox" class='ship_visible'/>
                                                         <div class='shipInfo_text'>
-                                                            <p>호서 거북선</p>
+                                                            <p>${ship_info.name}</p>
                                                             <p style='color: ${GROUP_COLOR[i]}'>ID: ${value['router_id']}</p>
                                                         </div>
                                                         ${
@@ -238,10 +247,12 @@
                                                         <div class='ship_more'>
                                                             <span class='ship_more_close_btn' onClick="shipInfo_more_close()">X</span>
 
-                                                            <p>${value['router_id']}</p>
-                                                            <img class="ship_more_img" src="https://i.namu.wiki/i/7jeVH_6qCK1ARphL-QXYaKMHRtJFVGN6wioSM6osgORavCV42-iwKWp_4hmvfxy9VToDHRk13315si8KsWZPpg.webp" alt="" />
+                                                            <p>${ship_info.name}</p>
+                                                            <img class="ship_more_img" src=${ship_info.img} alt="" />
                                                             <ul>
-                                                                <li>선박 정보</li>
+                                                                <li>ID: ${ship_info.router_id}</li>
+                                                                <li>선박 이름: ${ship_info.name}</li>
+                                                                <li>선박 정보: ${ship_info.des}</li>
                                                                 <li>현재 위치: ${value['latitude']}, ${value['longitude']}</li>
                                                                 
                                                             </ul>
@@ -384,7 +395,7 @@
     </script>
 
 </head>
-  <body onload="map_init()">
+  <body>
 
 
     <div class='mainLayout'>
@@ -433,7 +444,15 @@
                 <div class='shipInfoList_wrap'></div>
 
 
+                <div class="logoutBtn_wrap">
+                    <a href="/logoutProcess" id="logoutBtn">로그아웃</a>
+                </div>
+                
               </div>
+
+
+
+
   
               <button class='mapResetBtn' onclick="map_zoom_clear()">위치 초기화</button>
               <button class='zoomInBtn' onclick="map_zoomIn()">+</button>

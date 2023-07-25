@@ -5,27 +5,29 @@ const axios = require('axios');
 
 
 
-
 router.get('/', (req, res) => {
-    console.log(req.session.user_key, "메인 화면 접속")
+    console.log(req.session.admin_key, "관리자 메인 화면 접속")
 
-    if(req.session.user_key) {
-        res.render("main");
+    if(req.session.admin_key) {
+        res.render("admin/main", {admin_key: req.session.admin_key});
     } else {
-        res.send(`<script>location.href='/login';</script>`)
+        res.send(`<script>location.href='/admin/login';</script>`)
     }
 });
+
+
 
 
 router.get('/login', (req, res) => {
 
-    if(!req.session.user_key) {
-        res.render("login");
+    if(!req.session.admin_key) {
+        res.render("admin/login");
     } else {
-        res.send(`<script>location.href='/';</script>`)
+        res.send(`<script>location.href='/admin';</script>`)
     }
     
 });
+
 
 
 router.post('/loginProcess', async (req, res) => {
@@ -36,7 +38,7 @@ router.post('/loginProcess', async (req, res) => {
     }
 
     const response = await axios.post(
-        "https://ocean-gps.com:8000/userAPI/login",
+        "https://ocean-gps.com:8000/adminAPI/login",
         {
             id: body.id,
             pw: body.pw
@@ -44,9 +46,9 @@ router.post('/loginProcess', async (req, res) => {
     );
 
     if(response.data){
-        console.log(response.data[0].user_key, " 로그인")
+        console.log(response.data[0].admin_key, " 관리자 로그인")
 
-        req.session.user_key = response.data[0].user_key;
+        req.session.admin_key = response.data[0].admin_key;
 
         // req.session.save(function(){
             
@@ -60,12 +62,13 @@ router.post('/loginProcess', async (req, res) => {
 });
 
 
-
 router.get('/logoutProcess', async (req, res) => {
-    delete req.session.user_key;
+    delete req.session.admin_key;
    
-    res.send(`<script>location.href='/login';</script>`)
+    res.send(`<script>location.href='/admin/login';</script>`)
 });
+
+
 
 
 module.exports = router;

@@ -5,6 +5,12 @@ require('dotenv').config({ path: '.env'});
 const express = require('express');
 const app = express();
 
+const session = require("express-session");
+const MemoryStore = require("memorystore")(session);
+
+
+
+
 const logger = require('morgan');
 const path = require('path');
 
@@ -12,6 +18,22 @@ const path = require('path');
  * router import
  */
 const mainRouter = require("./routes/main");
+const adminRouter = require("./routes/admin");
+
+
+
+
+app.use(
+    session({
+        secret: "secret key",
+        resave: false,
+        saveUninitialized: true,
+        store: new MemoryStore({
+            checkPeriod: 86400000, // 24 hours (= 24 * 60 * 60 * 1000 ms)
+        }),
+        cookie: { maxAge: 86400000 },
+    })
+);
 
 
 
@@ -34,6 +56,8 @@ app.use('/public', express.static(__dirname +'/public'));
 app.use(logger('dev'));
 
 app.use('/', mainRouter);
+
+app.use('/admin', adminRouter);
 
 
 
