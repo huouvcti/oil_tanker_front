@@ -215,8 +215,9 @@
 
                 shipInfoList_wrap.innerHTML = `<input type="radio" name='ship_more_visible' class='ship_more_close'/>`;
                 markerList.map(async (value, i) => {
+
                     const response = await axios.get(
-                        `https://localhost:8000/gpsAPI/show_ship_info/${value['router_id']}`
+                        `https://ocean-gps.com:8000/gpsAPI/show_ship_info/${value['router_id']}`
                     );
 
                     let ship_info = {};
