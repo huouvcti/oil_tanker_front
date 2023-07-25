@@ -17,7 +17,7 @@
             console.log(admin_key)
 
             const response = await axios.get(
-                `https://localhost:8000/adminAPI/show_shipInfo/${admin_key}`,
+                `https://103.60.127.85:8000/adminAPI/show_shipInfo/${admin_key}`,
             );
 
             console.log(response.data[0])
