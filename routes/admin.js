@@ -15,6 +15,15 @@ router.get('/', (req, res) => {
     }
 });
 
+router.get('/info_update', (req, res) => {
+
+    if(req.session.admin_key) {
+        res.render("admin/info_update", {admin_key: req.session.admin_key});
+    } else {
+        res.send(`<script>location.href='/admin/login';</script>`)
+    }
+});
+
 
 
 

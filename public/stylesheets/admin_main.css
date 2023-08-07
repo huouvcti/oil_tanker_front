@@ -57,6 +57,16 @@
 
 .mobile_regitInfo .content ul li {
     height: 100px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+}
+
+.mobile_regitInfo .content ul li input {
+    height: 80%;
+    width: 100%;
+    font-size: 40px;
+
+    border-radius: 10px;
 }
 
 .mobile_regitInfo .content button {

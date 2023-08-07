@@ -25,10 +25,10 @@
             if(response.data){
                 document.getElementById("shipInfo_img").src = response.data[0].img;
 
-                document.getElementById("shipInfo_routerId").innerText = response.data[0].router_id;
-                document.getElementById("shipInfo_name").innerText = response.data[0].name;
-                document.getElementById("shipInfo_des").innerText = response.data[0].des;
-                document.getElementById("shipInfo_admin").innerText = response.data[0].id;
+                document.getElementById("shipInfo_routerId").value = response.data[0].router_id;
+                document.getElementById("shipInfo_name").value = response.data[0].name;
+                document.getElementById("shipInfo_des").value = response.data[0].des;
+                document.getElementById("shipInfo_admin").value = response.data[0].id;
             }
             
         }
@@ -46,16 +46,15 @@
             <img id="shipInfo_img" alt="" />
 
             <ul>
-                <li>ID: <span id="shipInfo_routerId"></span></li>
-                <li>선박 이름: <span id="shipInfo_name"></span></li>
-                <li>선박 정보: <span id="shipInfo_des"></span></li>
-                <li>관리자: <span id="shipInfo_admin"></span></li>
+                <li>ID: <input type="text" id="shipInfo_routerId"></li>
+                <li>선박 이름: <input type="text"  id="shipInfo_name"></li>
+                <li>선박 정보: <input type="text"  id="shipInfo_des"></li>
+                <li>관리자: <input type="text"  id="shipInfo_admin"></li>
             </ul>
 
-            <a href="/admin/logoutProcess">로그아웃</a>
             
 
-            <button onclick="location.href='/admin/info_update'">정보 수정</button>
+            <button onclick="location.href='/admin'">정보 수정</button>
         </div>
         
     </div>
