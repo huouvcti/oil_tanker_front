@@ -16,19 +16,23 @@
             }
             
             const response = await axios.post(
-                "http://103.60.127.85:5000/loginProcess",
+                "http://localhost:5000/loginProcess",
                 {
                     id: loginForm.id,
                     pw: loginForm.pw
                 }
             );
 
+            console.log(response.data)
+
+            
             if (response.data){
                 alert("로그인 성공");
                 window.location.href = '/';
             } else {
                 alert("아이디 또는 패스워드를 확인해주세요.");
             }
+            
         }
         
     </script>

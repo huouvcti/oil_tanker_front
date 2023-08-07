@@ -48,9 +48,9 @@ router.post('/loginProcess', async (req, res) => {
 
         req.session.user_key = response.data[0].user_key;
 
-        // req.session.save(function(){
+        req.session.save(function(){
             
-        // });
+        });
 
         res.send(true)
 

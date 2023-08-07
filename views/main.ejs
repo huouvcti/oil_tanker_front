@@ -19,6 +19,8 @@
     
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmpeg/0.1/jsmpg.js"></script>
+
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     
@@ -27,6 +29,32 @@
         window.onload = function() {
 
             map_init()
+
+
+
+            const client0 = new WebSocket('ws://ocean-gps.com:9000');
+            const client1 = new WebSocket('ws://ocean-gps.com:9001');
+            const client2 = new WebSocket('ws://ocean-gps.com:9002');
+            // const client4 = new WebSocket('ws://localhost:9004');
+
+            const cctv_view = document.getElementsByClassName('cctv_view');
+
+            const cctv_view_wrap = document.getElementsByClassName('cctv_view_wrap')[0];
+
+            const cctv_select = document.getElementsByClassName('cctv_select');
+            
+        
+            let player0 = new window.jsmpeg(client0, {
+            canvas: cctv_view[0],
+            });
+
+            let player1 = new window.jsmpeg(client1, {
+            canvas: cctv_view[1],
+            });
+
+            let player2 = new window.jsmpeg(client2, {
+            canvas: cctv_view[2],
+            });
         }
     </script>
 
